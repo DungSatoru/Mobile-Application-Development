@@ -1,0 +1,49 @@
+{
+  "project_info": {
+    "project_number": "162722533697",
+    "firebase_url": "https://strategic-volt-399508-default-rtdb.firebaseio.com",
+    "project_id": "strategic-volt-399508",
+    "storage_bucket": "strategic-volt-399508.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162722533697:android:23fd1134e7de8e4802d1c0",
+        "android_client_info": {
+          "package_name": "edu.tlu.de1_qlbh"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG_JZwoCcgOwqq3mLpNKzcEIcKZ8zX1c0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:162722533697:android:5bc9b34a50c3597102d1c0",
+        "android_client_info": {
+          "package_name": "edu.tlu.th01"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAG_JZwoCcgOwqq3mLpNKzcEIcKZ8zX1c0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
