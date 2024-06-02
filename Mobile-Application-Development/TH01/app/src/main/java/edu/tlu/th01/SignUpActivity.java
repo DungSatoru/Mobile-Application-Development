@@ -1,13 +1,13 @@
 package edu.tlu.th01;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -15,17 +15,19 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
-import java.util.HashMap;
-import java.util.Map;
+import edu.tlu.th01.Models.User;
+import edu.tlu.th01.Models.UserLite;
+import edu.tlu.th01.Repository.UserLiteRepository;
+import edu.tlu.th01.Repository.UserReponsitory;
 
 public class SignUpActivity extends AppCompatActivity {
     TextView etFullName, etUsername, etPassword;
     Button btnSignup;
+
+    private UserLiteRepository userLiteRepository;
+    private UserReponsitory userRepository;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,10 +39,9 @@ public class SignUpActivity extends AppCompatActivity {
             return insets;
         });
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        userLiteRepository = new UserLiteRepository(this);
+        userRepository = new UserReponsitory();
 
-        // Create a new user with a first and last name
-        Map<String, Object> users = new HashMap<>();
         etFullName = findViewById(R.id.etFullName);
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
@@ -52,31 +53,42 @@ public class SignUpActivity extends AppCompatActivity {
                 String fullName = etFullName.getText().toString();
                 String username = etUsername.getText().toString();
                 String password = etPassword.getText().toString();
-                users.put("fullname", fullName);
-                users.put("username", username);
-                users.put("password", password);
 
-                // Add a new document with a generated ID
-                db.collection("users")
-                    .add(users)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            Toast.makeText(SignUpActivity.this, "Sign up successfully!", Toast.LENGTH_SHORT).show();
+                // Kiểm tra trùng lặp username trên Firebase Firestore
+                userRepository.isUsernameExists(username, SignUpActivity.this, new OnSuccessListener<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean exists) {
+                        if (exists) {
+                            Toast.makeText(SignUpActivity.this, "Username đã tồn tại trên Firebase!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            User newUser = new User(fullName, username, password);
+                            userRepository.addUser(newUser, SignUpActivity.this);
+
                             etFullName.setText("");
                             etUsername.setText("");
                             etPassword.setText("");
+
                         }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(SignUpActivity.this, "Sign up failed!", Toast.LENGTH_SHORT).show();
-                        }
+                    }
+                }, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(SignUpActivity.this, "Xảy ra lỗi khi kiểm tra username trên Firebase!", Toast.LENGTH_SHORT).show();
+                    }
                 });
+
+                // Kiểm tra trùng lặp username trên SQLite
+                if (userLiteRepository.isUsernameExists(username)) {
+                    Toast.makeText(SignUpActivity.this, "Username đã tồn tại trên SQLite!", Toast.LENGTH_SHORT).show();
+                } else {
+                    UserLite newUser = new UserLite(fullName, username, password);
+                    userLiteRepository.addUser(newUser);
+
+                    etFullName.setText("");
+                    etUsername.setText("");
+                    etPassword.setText("");
+                }
             }
         });
-
-
     }
 }

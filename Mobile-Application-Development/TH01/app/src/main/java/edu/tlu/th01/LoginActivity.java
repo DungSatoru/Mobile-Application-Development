@@ -15,13 +15,15 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QuerySnapshot;
+//import com.google.android.gms.tasks.OnFailureListener;
+//import com.google.android.gms.tasks.OnSuccessListener;
+//import com.google.firebase.firestore.FirebaseFirestore;
+//import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
+import java.util.List;
+
+import edu.tlu.th01.Models.UserLite;
+import edu.tlu.th01.Repository.UserLiteRepository;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -42,7 +44,9 @@ public class LoginActivity extends AppCompatActivity {
             return insets;
         });
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
+//        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Khởi tạo UserLiteRepository
+        UserLiteRepository userLiteRepository = new UserLiteRepository(this);
 
         inputUsername = (EditText) findViewById(R.id.etUsername);
         inputPassword = (EditText) findViewById(R.id.etPassword);
@@ -54,26 +58,50 @@ public class LoginActivity extends AppCompatActivity {
                 String username = inputUsername.getText().toString();
                 String password = inputPassword.getText().toString();
 
-                db.collection("users")
-                        .whereEqualTo("username", username)
-                        .whereEqualTo("password", password)
-                        .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                            @Override
-                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                                if (!queryDocumentSnapshots.isEmpty()) {
-                                    Toast.makeText(LoginActivity.this, "Login successfully!", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(LoginActivity.this, "Username or Password is incorrect!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@androidx.annotation.NonNull Exception e) {
-                                Toast.makeText(LoginActivity.this, "Username or Password is not corrected!", Toast.LENGTH_SHORT).show();
-                            }
-                        })
+                // Sử dụng Firebase, giữ nguyên phần này, không được xóa
+//                db.collection("users")
+//                        .whereEqualTo("username", username)
+//                        .whereEqualTo("password", password)
+//                        .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//                            @Override
+//                            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+//                                if (!queryDocumentSnapshots.isEmpty()) {
+//                                    Toast.makeText(LoginActivity.this, "Login successfully!", Toast.LENGTH_SHORT).show();
+//                                } else {
+//                                    Toast.makeText(LoginActivity.this, "Username or Password is incorrect!", Toast.LENGTH_SHORT).show();
+//                                }
+//                            }
+//                        })
+//                        .addOnFailureListener(new OnFailureListener() {
+//                            @Override
+//                            public void onFailure(@androidx.annotation.NonNull Exception e) {
+//                                Toast.makeText(LoginActivity.this, "Username or Password is not corrected!", Toast.LENGTH_SHORT).show();
+//                            }
+//                        })
                 ;
+
+                // Kiểm tra thông tin đăng nhập từ SQLite
+                userLiteRepository.open();
+                List<UserLite> users = userLiteRepository.getAllUsers();
+                boolean loginSuccessful = false;
+
+                for (UserLite user : users) {
+                    if (user.getUsername().equals(username) && user.getPassword().equals(password)) {
+                        loginSuccessful = true;
+                        break;
+                    }
+                }
+
+                if (loginSuccessful) {
+                    Toast.makeText(LoginActivity.this, "Đăng nhập thành công!", Toast.LENGTH_SHORT).show();
+                    // Chuyển đến màn hình khác nếu đăng nhập thành công
+                    // Intent intent = new Intent(LoginActivity.this, AnotherActivity.class);
+                    // startActivity(intent);
+                } else {
+                    Toast.makeText(LoginActivity.this, "Tên đăng nhập hoặc mật khẩu không chính xác!", Toast.LENGTH_SHORT).show();
+                }
+
+                userLiteRepository.close();
             }
         });
 
