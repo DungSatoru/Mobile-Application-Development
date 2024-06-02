@@ -15,8 +15,6 @@ import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
-import java.util.Random;
 
 import edu.tlu.dungotgk.Adapters.ProductAdapter;
 import edu.tlu.dungotgk.Models.Product;
@@ -40,19 +38,26 @@ public class MainActivity extends AppCompatActivity {
         init();
         eventHandler();
 
+//        ImageView imageView = findViewById(R.id.ivTest);
+//        String url = "https://thanhnien.mediacdn.vn/Uploaded/nhutnq/2022_10_02/220928180903-03-dall-e-ai-2189.jpg";
+//
+//        Glide.with(this)
+//                .load(url)
+//                .into(imageView);
+
     }
 
     private void init() {
         ivCart = findViewById(R.id.ivCart);
 
         ProductRepository productRepository = new ProductRepository(this);
-//        for (int i = 0; i < 12; i++) {
-//            String resourceName = "ip" + i%6;
-//            double price = 1000000*i; // Giả sử giá tiền nằm trong khoảng từ 0 đến 100000000
-//            int resourceId = getResources().getIdentifier(resourceName, "drawable", getPackageName());
-//            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + resourceId);
-//            productRepository.addProduct(new Product("Samsung Galaxy S70", "Dung lượng 128GB", price, uri));
-//        }
+        for (int i = 0; i < 12; i++) {
+            String resourceName = "ip" + i%6;
+            double price = 1000000*i; // Giả sử giá tiền nằm trong khoảng từ 0 đến 100000000
+            int resourceId = getResources().getIdentifier(resourceName, "drawable", getPackageName());
+            Uri uri = Uri.parse("android.resource://" + getPackageName() + "/" + resourceId);
+            productRepository.addProduct(new Product("Samsung Galaxy S70", "Dung lượng 128GB", price, uri));
+        }
 
         List<Product> products = productRepository.getAllProducts();
         ArrayList<Product> productList = new ArrayList<>(products);
@@ -73,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(MainActivity.this, CartActivity.class);
                 startActivity(intent);
             }
-
-
         });
     }
 

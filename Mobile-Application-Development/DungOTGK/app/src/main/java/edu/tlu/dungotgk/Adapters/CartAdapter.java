@@ -65,6 +65,8 @@ public class CartAdapter extends ArrayAdapter<Cart> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
+        // Đổ dữ liệu vào các view bằng cách sử dụng đối tượng product
+
         if (cart != null) {
             Product product = getProductById(cart.getProductId());
             if (product != null) {
@@ -125,7 +127,7 @@ public class CartAdapter extends ArrayAdapter<Cart> {
         return convertView;
     }
 
-    private Product getProductById(int productId) {
+    public Product getProductById(int productId) {
         Product product = null;
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         String query = "SELECT * FROM " + DatabaseHelper.TABLE_PRODUCTS + " WHERE " + DatabaseHelper.PRODUCTS_COLUMN_ID + " = ?";

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 
 import edu.tlu.dungotgk.Adapters.CartAdapter;
 import edu.tlu.dungotgk.Models.Cart;
+import edu.tlu.dungotgk.Models.Product;
 import edu.tlu.dungotgk.R;
 import edu.tlu.dungotgk.Repositories.CartRepository;
 
@@ -66,8 +67,20 @@ public class CartActivity extends AppCompatActivity {
         adapter = new CartAdapter(this, cartList);
         listView.setAdapter(adapter);
 
-        double totalMoney = 0;
+        updateTotalMoney();
 
+
+    }
+
+    public void updateTotalMoney() {
+        double totalMoney = 0;
+        for (Cart cart : cartList) {
+            Product product = adapter.getProductById(cart.getProductId());
+            if (product != null) {
+                totalMoney += product.getPrice() * cart.getQuantity();
+            }
+        }
+        tvTotalMoney.setText(String.format("Total: $%.2f", totalMoney));
     }
 
 }
