@@ -68,8 +68,6 @@ public class CartActivity extends AppCompatActivity {
         listView.setAdapter(adapter);
 
         updateTotalMoney();
-
-
     }
 
     public void updateTotalMoney() {
@@ -80,7 +78,7 @@ public class CartActivity extends AppCompatActivity {
                 totalMoney += product.getPrice() * cart.getQuantity();
             }
         }
-        tvTotalMoney.setText(String.format("Total: $%.2f", totalMoney));
+        tvTotalMoney.setText(Double.toString(totalMoney));
     }
 
 }

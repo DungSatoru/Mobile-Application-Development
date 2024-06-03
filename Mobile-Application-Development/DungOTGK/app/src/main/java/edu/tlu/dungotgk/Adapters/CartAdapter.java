@@ -97,30 +97,30 @@ public class CartAdapter extends ArrayAdapter<Cart> {
                     }
 
                 });
-
-                // Thay đổi số lượng sản phẩm trong giỏ hàng
+                // Cập nhật
                 viewHolder.etQuantity.addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
                     }
 
                     @Override
                     public void onTextChanged(CharSequence s, int start, int before, int count) {
-
                     }
 
                     @Override
                     public void afterTextChanged(Editable s) {
-                        // Cập nhật CSDL
-                        int quantity = Integer.parseInt(viewHolder.etQuantity.getText().toString());
-                        viewHolder.etQuantity.setText(String.valueOf(quantity));
-                        cart.setQuantity(quantity);
-                        cartRepository.updateCart(cart);
+                        // Kiểm tra xem có thay đổi hay không
+                        if (!s.toString().isEmpty()) {
+                            int quantity = Integer.parseInt(s.toString());
+                            if (quantity != cart.getQuantity()) {
+                                // Cập nhật CSDL
+                                cart.setQuantity(quantity);
+                                cartRepository.updateCart(cart);
+                                _cartActivity.updateTotalMoney();
+                            }
+                        }
                     }
                 });
-
-
             }
         }
 
