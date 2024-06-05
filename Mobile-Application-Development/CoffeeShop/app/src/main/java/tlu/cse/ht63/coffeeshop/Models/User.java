@@ -78,13 +78,6 @@ public class User {
 
     public User() {}
 
-    public User(String name, String username, String password, Date createdAt) {
-        this.fullName = name;
-        this.userName = username;
-        this.passWord =  password;
-        this.createdAt = createdAt;
-    }
-
     public User(int id_User, String name, String username, String password) {
         this.id = id_User;
         this.fullName = name;
@@ -92,14 +85,12 @@ public class User {
         this.passWord =  password;
     }
 
-    public User(int id, String fullName, String userName, String passWord, Date createdAt, boolean role, boolean status) {
-        this.id = id;
+    public User(String fullName, String userName, String passWord, Date createdAt, boolean role) {
         this.fullName = fullName;
         this.userName = userName;
         this.passWord = passWord;
         this.createdAt = createdAt;
         this.role = role;
-        this.status = status;
     }
 
     // Getters and Setters

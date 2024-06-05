@@ -43,6 +43,7 @@ public class UserRepository {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String createdAtString = dateFormat.format(user.getCreatedAt());
         values.put(DatabaseHelper.USERS_COLUMN_CREATEDAT, createdAtString);
+        values.put(DatabaseHelper.USERS_COLUMN_ROLE, user.isRole());
 
         long result = db.insert(DatabaseHelper.TABLE_USERS, null, values);
         if (result != -1) {
@@ -79,25 +80,6 @@ public class UserRepository {
         close();
     }
 
-    public User getUser(int userId) {
-        open();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, null, DatabaseHelper.USERS_COLUMN_ID + " = ?", new String[]{String.valueOf(userId)}, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            User user = new User(
-                    cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_ID)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_FULLNAME)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_USERNAME)),
-                    cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_PASSWORD))
-            );
-            cursor.close();
-            close();
-            return user;
-        }
-        close();
-        return null;
-    }
-
     public User getUser(String username, String password) {
         open();
         Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, null, DatabaseHelper.USERS_COLUMN_USERNAME + " = ? AND " + DatabaseHelper.USERS_COLUMN_PASSWORD + " = ?", new String[]{username, password}, null, null, null);
@@ -115,28 +97,6 @@ public class UserRepository {
         }
         close();
         return null;
-    }
-
-    public List<User> getAllUsers() {
-        open();
-        List<User> users = new ArrayList<>();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_USERS, null, null, null, null, null, null);
-        if (cursor != null) {
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                User user = new User(
-                        cursor.getInt(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_ID)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_FULLNAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_USERNAME)),
-                        cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.USERS_COLUMN_PASSWORD))
-                );
-                users.add(user);
-                cursor.moveToNext();
-            }
-            cursor.close();
-        }
-        close();
-        return users;
     }
 
     public void updateStatusUser(String username, boolean status) {

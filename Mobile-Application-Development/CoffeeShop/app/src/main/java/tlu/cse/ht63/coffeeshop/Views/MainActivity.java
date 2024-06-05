@@ -29,8 +29,10 @@ import tlu.cse.ht63.coffeeshop.Services.SessionManager;
 public class MainActivity extends AppCompatActivity {
     private ImageView ivCart;
     private FloatingActionButton btnLogOut;
-    private String userName, fullName;
-    private TextView tvUserName, tvFullName;
+    private String userName;
+    private String fullName;
+    private TextView tvUserName;
+    private TextView tvFullName;
     private UserRepository userRepository;
 
     @Override
@@ -38,17 +40,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
-
+        setupInsets();
         initViews();
         loadUserData();
 //        initProductRepository();
         setupListView();
         setupEventHandlers();
+    }
+
+    private void setupInsets() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 
     private void initViews() {
@@ -60,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadUserData() {
         SessionManager sessionManager = new SessionManager(getApplicationContext());
-
         userName = sessionManager.getFullName();
         fullName = sessionManager.getUsername();
         tvFullName.setText(userName);
@@ -120,9 +124,9 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnLogOut.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
-            userRepository.updateStatusUser(userName, false);
             SessionManager sessionManager = new SessionManager(getApplicationContext());
+            Intent intent = new Intent(MainActivity.this, LoginActivity.class);
+            userRepository.updateStatusUser(sessionManager.getUsername(), false);
             sessionManager.logout(); // Đăng xuất người dùng
             startActivity(intent);
             finish(); // Kết thúc MainActivity để người dùng không thể quay lại bằng nút back

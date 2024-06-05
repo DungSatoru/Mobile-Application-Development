@@ -14,12 +14,16 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import tlu.cse.ht63.coffeeshop.Adapters.CartAdapter;
 import tlu.cse.ht63.coffeeshop.Models.Cart;
+import tlu.cse.ht63.coffeeshop.Models.Order;
 import tlu.cse.ht63.coffeeshop.Models.Product;
 import tlu.cse.ht63.coffeeshop.R;
 import tlu.cse.ht63.coffeeshop.Repositories.CartRepository;
+import tlu.cse.ht63.coffeeshop.Repositories.OrderRepository;
 import tlu.cse.ht63.coffeeshop.Services.SessionManager;
 
 
@@ -29,10 +33,11 @@ public class CartActivity extends AppCompatActivity {
     private ArrayList<Cart> cartList;
     private CartAdapter adapter;
     private ListView listView;
-    TextView tvTotalMoney, tvApply;
+    TextView tvTotalMoney, tvApply, btnOrder;
     EditText etVoucher;
     private boolean isApplyVoucher;
 
+    double totalMoney;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +54,8 @@ public class CartActivity extends AppCompatActivity {
         tvApply = findViewById(R.id.tvApply);
         etVoucher = findViewById(R.id.etVoucher);
         loadCartListView();
-        isApplyVoucher  = false;
+        isApplyVoucher = false;
+        btnOrder = findViewById(R.id.btnOrder);
     }
 
     private void setSystemBarsPadding() {
@@ -89,6 +95,27 @@ public class CartActivity extends AppCompatActivity {
             }
         });
 
+        btnOrder.setOnClickListener(v -> {
+            SessionManager sessionManager = new SessionManager(this);
+            CartRepository cartRepository = new CartRepository(this);
+
+            Order order = new Order();
+            order.setUserId(sessionManager.getUserId());
+            order.setTotalAmount(totalMoney);
+            order.setDate(new Date());
+
+            OrderRepository orderRepository = new OrderRepository(this);
+            orderRepository.addOrder(order);
+
+            cartRepository.updateCartIsDone();
+
+            Toast.makeText(this, "Dat hang thanh cong", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(CartActivity.this, MainActivity.class);
+            startActivity(intent);
+
+
+        });
 
     }
 
@@ -103,7 +130,7 @@ public class CartActivity extends AppCompatActivity {
     }
 
     public void updateTotalMoney() {
-        double totalMoney = 0;
+        totalMoney = 0;
         for (Cart cart : cartList) {
             Product product = adapter.getProductById(cart.getProductId());
             if (product != null) {
@@ -115,7 +142,6 @@ public class CartActivity extends AppCompatActivity {
         }
         tvTotalMoney.setText(Double.toString(totalMoney));
     }
-
 
 
 }

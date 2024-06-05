@@ -3,6 +3,7 @@ package tlu.cse.ht63.coffeeshop.Views;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,6 +22,7 @@ import tlu.cse.ht63.coffeeshop.Repositories.UserRepository;
 public class SignUpActivity extends AppCompatActivity {
     TextView etFullName, etUsername, etPassword;
     Button btnSignup;
+    RadioButton rbAdmin, rbStaff;
 
     private UserRepository userRepository;
 
@@ -37,7 +39,6 @@ public class SignUpActivity extends AppCompatActivity {
 
         init();
         eventHandler();
-
     }
 
     private void init() {
@@ -46,27 +47,54 @@ public class SignUpActivity extends AppCompatActivity {
         etUsername = findViewById(R.id.etUserName);
         etPassword = findViewById(R.id.etPassword);
         btnSignup = findViewById(R.id.btnSignUp);
+        rbAdmin = findViewById(R.id.rbAdmin);
+        rbStaff = findViewById(R.id.rbStaff);
+
+        rbStaff.setChecked(true);
     }
 
     private void eventHandler() {
+        rbAdmin.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                rbStaff.setChecked(false);
+            }
+        });
+
+        rbStaff.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+                rbAdmin.setChecked(false);
+            }
+        });
         btnSignup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String fullName = etFullName.getText().toString();
-                String username = etUsername.getText().toString();
-                String password = etPassword.getText().toString();
+                String fullName = etFullName.getText().toString().trim();
+                String username = etUsername.getText().toString().trim();
+                String password = etPassword.getText().toString().trim();
+                boolean role = rbAdmin.isChecked();
+
+                // Kiểm tra trống
+                if (fullName.isEmpty() || username.isEmpty() || password.isEmpty()) {
+                    Toast.makeText(SignUpActivity.this, "Vui lòng điền đầy đủ thông tin!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
 
                 // Kiểm tra trùng lặp username trên SQLite
                 if (userRepository.isUserNameExists(username)) {
                     Toast.makeText(SignUpActivity.this, "Username đã tồn tại trên SQLite!", Toast.LENGTH_SHORT).show();
                 } else {
                     Date date = new Date();
-                    User newUser = new User(fullName, username, password, date);
+                    User newUser = new User(fullName, username, password, date, role);
                     userRepository.addUser(newUser);
 
+                    // Xóa dữ liệu trên giao diện sau khi thêm người dùng thành công
                     etFullName.setText("");
                     etUsername.setText("");
                     etPassword.setText("");
+                    rbAdmin.setChecked(false);
+                    rbStaff.setChecked(false);
+
+                    Toast.makeText(SignUpActivity.this, "Đăng ký thành công!", Toast.LENGTH_SHORT).show();
                 }
             }
         });

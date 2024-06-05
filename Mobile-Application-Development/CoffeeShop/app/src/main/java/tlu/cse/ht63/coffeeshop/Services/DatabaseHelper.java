@@ -32,6 +32,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String CART_COLUMN_USER_ID = "userId";
     public static final String CART_COLUMN_PRODUCT_ID = "productId";
     public static final String CART_COLUMN_QUANTITY = "quantity";
+    public static final String CART_COLUMN_IS_DONE = "isDone"; // Thêm cột mới
+
+    // TABLE ORDERS
+    public static final String TABLE_ORDERS = "orders";
+    public static final String ORDERS_COLUMN_ID = "id";
+    public static final String ORDERS_COLUMN_DATE = "date";
+    public static final String ORDERS_COLUMN_USER_ID = "user_id";
+    public static final String ORDERS_COLUMN_TOTAL_AMOUNT = "total_amount";
+
 
     // CREATE TABLE USERS
     private static final String TABLE_CREATE_USERS =
@@ -40,12 +49,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     USERS_COLUMN_FULLNAME + " TEXT, " +
                     USERS_COLUMN_USERNAME + " TEXT, " +
                     USERS_COLUMN_PASSWORD + " TEXT, " +
-                    USERS_COLUMN_CREATEDAT + " DATE, " +
+                    USERS_COLUMN_CREATEDAT + " DATE DEFAULT CURRENT_TIMESTAMP, " +
                     USERS_COLUMN_ROLE + " BIT DEFAULT 0, " +
                     USERS_COLUMN_STATUS + " BIT DEFAULT 0" +
                     ");";
 
-    // CREATE TABLE USERS
+    // CREATE TABLE PRODUCTS
     private static final String TABLE_CREATE_PRODUCTS =
             "CREATE TABLE " + TABLE_PRODUCTS + " (" +
                     PRODUCTS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -55,15 +64,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     PRODUCTS_COLUMN_IMAGE + " TEXT " +
                     ");";
 
-    // CREATE TABLE CART
     private static final String TABLE_CREATE_CART =
             "CREATE TABLE " + TABLE_CART + " (" +
                     CART_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     CART_COLUMN_USER_ID + " INTEGER, " +
                     CART_COLUMN_PRODUCT_ID + " INTEGER, " +
                     CART_COLUMN_QUANTITY + " INTEGER, " +
+                    CART_COLUMN_IS_DONE + " BIT DEFAULT 0, " +
                     "FOREIGN KEY(" + CART_COLUMN_USER_ID + ") REFERENCES " + TABLE_USERS + "(" + USERS_COLUMN_ID + "), " +
                     "FOREIGN KEY(" + CART_COLUMN_PRODUCT_ID + ") REFERENCES " + TABLE_PRODUCTS + "(" + PRODUCTS_COLUMN_ID + ")" +
+                    ");";
+
+    // CREATE TABLE ORDERS
+    private static final String TABLE_CREATE_ORDERS =
+            "CREATE TABLE " + TABLE_ORDERS + " (" +
+                    ORDERS_COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                    ORDERS_COLUMN_DATE + " DATE NOT NULL, " +
+                    ORDERS_COLUMN_USER_ID + " INTEGER NOT NULL, " +
+                    ORDERS_COLUMN_TOTAL_AMOUNT + " REAL NOT NULL" +
                     ");";
 
     public DatabaseHelper(Context context) {
@@ -75,6 +93,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(TABLE_CREATE_USERS);
         db.execSQL(TABLE_CREATE_PRODUCTS);
         db.execSQL(TABLE_CREATE_CART);
+        db.execSQL(TABLE_CREATE_ORDERS); // Thêm câu lệnh tạo bảng ORDERS vào hàm onCreate
     }
 
     @Override
@@ -82,6 +101,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_USERS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_PRODUCTS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_CART);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_ORDERS); // Thêm câu lệnh xóa bảng ORDERS vào hàm onUpgrade
         onCreate(db);
     }
 }

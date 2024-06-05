@@ -5,7 +5,8 @@ public class Cart {
     private int userId;
     private int productId;
     private int quantity;
-    private double productPrice; // Thêm trường này để lưu giá sản phẩm cho việc tính tổng
+    private double productPrice;
+    private boolean isDone;
 
     // Constructor mặc định
     public Cart() {
@@ -25,6 +26,14 @@ public class Cart {
         this.userId = userId;
         this.productId = productId;
         this.quantity = quantity;
+    }
+
+    public Cart(int idCart, int userId, int productId, int quantity, boolean isDone) {
+        this.idCart = idCart;
+        this.userId = userId;
+        this.productId = productId;
+        this.quantity = quantity;
+        this.isDone = isDone;
     }
 
     // Getter và Setter
@@ -70,5 +79,13 @@ public class Cart {
 
     public double getTotalPrice() {
         return this.productPrice * this.quantity;
+    }
+
+    public boolean isDone() {
+        return isDone;
+    }
+
+    public void setDone(boolean isDone) {
+        this.isDone = isDone;
     }
 }

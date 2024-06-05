@@ -16,7 +16,6 @@ public class CartRepository {
     private SQLiteDatabase db;
     private DatabaseHelper dbHelper;
 
-    private double total;
     private Context context;
 
     public CartRepository(Context context) {
@@ -52,7 +51,7 @@ public class CartRepository {
         List<Cart> cartItems = new ArrayList<>();
         open();
 //        Cursor cursor = db.rawQuery("SELECT * FROM " + DatabaseHelper.TABLE_CART, null);
-        Cursor cursor = db.rawQuery("SELECT * FROM  " + DatabaseHelper.TABLE_CART + " WHERE " + DatabaseHelper.CART_COLUMN_USER_ID + " = ?", new String[]{String.valueOf(userId)});
+        Cursor cursor = db.rawQuery("SELECT * FROM  " + DatabaseHelper.TABLE_CART + " WHERE " + DatabaseHelper.CART_COLUMN_USER_ID + " = ? AND " + DatabaseHelper.CART_COLUMN_IS_DONE + " = ?", new String[]{String.valueOf(userId), "0"});
         if (cursor != null) {
             if (cursor.moveToFirst()) {
                 do {
@@ -80,6 +79,14 @@ public class CartRepository {
         values.put(DatabaseHelper.CART_COLUMN_PRODUCT_ID, cart.getProductId());
         values.put(DatabaseHelper.CART_COLUMN_QUANTITY, cart.getQuantity());
         return values;
+    }
+
+    public void updateCartIsDone() {
+        open();
+        ContentValues values = new ContentValues();
+        values.put(DatabaseHelper.CART_COLUMN_IS_DONE, 1);
+        db.update(DatabaseHelper.TABLE_CART, values, DatabaseHelper.CART_COLUMN_IS_DONE + " = 0", null);
+        close();
     }
 
     private Cart createCartFromCursor(Cursor cursor) {
